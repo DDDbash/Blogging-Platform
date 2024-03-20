@@ -84,7 +84,7 @@ export const signin = async (req: Request, res: Response) => {
         email: existingUser.email,
         username: existingUser.username,
       },
-      "test",
+      "secretKey",
       { expiresIn: "1h" }
     );
 

@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express from "express";
 import dataSource from "./datasource/dataSource";
 import authRoutes from "./routes/auth";
+import postRoutes from "./routes/post";
 
 const app = express();
 const PORT = 8000;
@@ -9,6 +10,7 @@ const PORT = 8000;
 app.use(express.json());
 
 app.use("/auth", authRoutes);
+app.use("/post", postRoutes);
 
 app.get("/", (req, res) => {
   res.send("Blogging Platform");
