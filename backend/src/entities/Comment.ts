@@ -3,26 +3,20 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./User";
 import { Post } from "./Post";
-import { Comment } from "./Comment";
 
 @Entity()
-export class User {
+export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  username: string;
-
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  password: string;
+  content: string;
 
   @CreateDateColumn()
   createdAt: string;
@@ -37,9 +31,9 @@ export class User {
   })
   deletedAt: string | null;
 
-  @OneToMany(() => Post, (post) => post.author)
-  posts: Post[];
+  @ManyToOne(() => User, (user) => user.comments)
+  author: User;
 
-  @OneToMany(() => Comment, (comment) => comment.author)
-  comments: Comment[];
+  @ManyToOne(() => Post, (post) => post.comments)
+  post: Post;
 }

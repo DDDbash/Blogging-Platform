@@ -3,25 +3,33 @@ import dataSource from "../datasource/dataSource";
 import { Post } from "../entities/Post";
 import { AuthenticatedUserRequest } from "../interface/auth";
 
-const formatData = (post: Post) => {
-  return {
-    id: post.id,
-    title: post.title,
-    content: post.content,
-    author: {
-      id: post.author.id,
-      username: post.author.username,
-    },
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-  };
-};
-
 export const getPosts = async (_: Request, res: Response) => {
   try {
     const postRepo = dataSource.getRepository(Post);
 
-    const allPosts = await postRepo.find();
+    const allPosts = await postRepo.find({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          id: true,
+          username: true,
+        },
+        comments: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        createdAt: true,
+        updatedAt: true,
+      },
+      relations: {
+        author: true,
+        comments: true,
+      },
+    });
 
     res.status(200).json({ data: allPosts });
   } catch (error) {
@@ -40,11 +48,29 @@ export const getPostDetails = async (req: Request, res: Response) => {
     const postRepo = dataSource.getRepository(Post);
 
     const postDetail = await postRepo.findOne({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        author: {
+          id: true,
+          username: true,
+        },
+        comments: {
+          id: true,
+          content: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        createdAt: true,
+        updatedAt: true,
+      },
       where: {
         id: Number(postId),
       },
       relations: {
         author: true,
+        comments: true,
       },
     });
 
@@ -52,9 +78,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const returnValue = formatData(postDetail);
-
-    res.status(200).json({ data: returnValue });
+    res.status(200).json({ data: postDetail });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -78,11 +102,9 @@ export const createPost = async (
     newPost.content = post.content;
     newPost.author = req.user;
 
-    const result = await postRepo.save(newPost);
+    await postRepo.save(newPost);
 
-    const returnValue = formatData(result);
-
-    res.status(200).json({ data: returnValue });
+    res.status(200).json({ message: "Post created" });
   } catch (error) {
     res.status(422).json(error);
   }
@@ -121,13 +143,10 @@ export const updatePost = async (
 
     existingPost.title = post.title;
     existingPost.content = post.content;
-    existingPost.author = req.user;
 
-    const result = await postRepo.save(existingPost);
+    await postRepo.save(existingPost);
 
-    const returnValue = formatData(result);
-
-    res.status(200).json({ data: returnValue });
+    res.status(200).json({ message: "Post updated" });
   } catch (error) {
     res.status(422).json(error);
   }
