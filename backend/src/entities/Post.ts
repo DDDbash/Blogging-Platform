@@ -1,4 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { User } from "./User";
 
 @Entity()
@@ -12,17 +20,19 @@ export class Post {
   @Column()
   content: string;
 
-  @Column()
-  author: string;
-
-  @Column()
+  @CreateDateColumn()
   createdAt: string;
 
-  @Column({
+  @UpdateDateColumn({
     nullable: true,
   })
   updatedAt: string;
 
+  @DeleteDateColumn({
+    nullable: true,
+  })
+  deletedAt: string | null;
+
   @ManyToOne(() => User, (user) => user.posts)
-  user: User;
+  author: User;
 }

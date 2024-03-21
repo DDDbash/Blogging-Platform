@@ -8,13 +8,12 @@ const formatData = (post: Post) => {
     id: post.id,
     title: post.title,
     content: post.content,
-    author: post.author,
+    author: {
+      id: post.author.id,
+      username: post.author.username,
+    },
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
-    user: {
-      id: post.user.id,
-      username: post.user.username,
-    },
   };
 };
 
@@ -45,7 +44,7 @@ export const getPostDetails = async (req: Request, res: Response) => {
         id: Number(postId),
       },
       relations: {
-        user: true,
+        author: true,
       },
     });
 
@@ -67,8 +66,6 @@ export const createPost = async (
 ) => {
   const post = req.body;
 
-  const date = new Date();
-
   if (!req.user) {
     return res.status(403).json({ message: "Unauthorized" });
   }
@@ -79,9 +76,7 @@ export const createPost = async (
     const newPost = new Post();
     newPost.title = post.title;
     newPost.content = post.content;
-    newPost.author = post.author;
-    newPost.createdAt = date.toISOString();
-    newPost.user = req.user;
+    newPost.author = req.user;
 
     const result = await postRepo.save(newPost);
 
@@ -100,8 +95,6 @@ export const updatePost = async (
   const { postId } = req.params;
   const post = req.body;
 
-  const date = new Date();
-
   if (!req.user) {
     return res.status(404).json({ message: "User not found" });
   }
@@ -114,7 +107,7 @@ export const updatePost = async (
         id: Number(postId),
       },
       relations: {
-        user: true,
+        author: true,
       },
     });
 
@@ -122,23 +115,17 @@ export const updatePost = async (
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (existingPost.user.id !== Number(req.user.id)) {
+    if (existingPost.author.id !== Number(req.user.id)) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    existingPost.title = post.title || existingPost.title;
-    existingPost.content = post.content || existingPost.content;
-    existingPost.author = post.author || existingPost.author;
-    existingPost.updatedAt = date.toISOString();
+    existingPost.title = post.title;
+    existingPost.content = post.content;
+    existingPost.author = req.user;
 
-    const result = await postRepo.update(Number(postId), {
-      title: post.title || existingPost.title,
-      content: post.content || existingPost.content,
-      author: post.author || existingPost.author,
-      updatedAt: date.toISOString(),
-    });
+    const result = await postRepo.save(existingPost);
 
-    const returnValue = formatData({ ...existingPost, ...post });
+    const returnValue = formatData(result);
 
     res.status(200).json({ data: returnValue });
   } catch (error) {
@@ -164,7 +151,7 @@ export const deletePost = async (
         id: Number(postId),
       },
       relations: {
-        user: true,
+        author: true,
       },
     });
 
@@ -172,11 +159,11 @@ export const deletePost = async (
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (existingPost.user.id !== Number(req.user.id)) {
+    if (existingPost.author.id !== Number(req.user.id)) {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
-    await postRepo.delete(Number(postId));
+    await postRepo.softDelete(Number(postId));
 
     res.status(200).json({ message: "Post successfully deleted" });
   } catch (error) {
