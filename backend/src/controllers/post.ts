@@ -3,11 +3,15 @@ import dataSource from "../datasource/dataSource";
 import { Post } from "../entities/Post";
 import { AuthenticatedUserRequest } from "../interface/auth";
 
-export const getPosts = async (_: Request, res: Response) => {
+export const getPosts = async (req: Request, res: Response) => {
+  const { page, limit } = req.query;
+  const pageNo = page ? Number(page) : 1;
+  const perPage = limit ? Number(limit) : 5;
+
   try {
     const postRepo = dataSource.getRepository(Post);
 
-    const allPosts = await postRepo.find({
+    const allPosts = await postRepo.findAndCount({
       select: {
         id: true,
         title: true,
@@ -25,13 +29,22 @@ export const getPosts = async (_: Request, res: Response) => {
         createdAt: true,
         updatedAt: true,
       },
+      skip: (pageNo - 1) * 5,
+      take: perPage,
       relations: {
         author: true,
         comments: true,
       },
     });
 
-    res.status(200).json({ data: allPosts });
+    res.status(200).json({
+      data: allPosts[0],
+      meta: {
+        page,
+        perPage,
+        total: allPosts[1],
+      },
+    });
   } catch (error) {
     res.status(404).json(error);
   }
