@@ -4,11 +4,13 @@ import dataSource from "./datasource/dataSource";
 import authRoutes from "./routes/auth";
 import postRoutes from "./routes/post";
 import commentRoutes from "./routes/comment";
+import cors from "cors";
 
 const app = express();
 const PORT = 8000;
 
 app.use(express.json());
+app.use(cors());
 
 app.use("/auth", authRoutes);
 app.use("/post", postRoutes);
