@@ -1,10 +1,11 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 
+import { getProfile } from "@/apis/user";
 import { Button } from "@/components/ui/button";
 import { ACCESS_TOKEN } from "@/utils/constants";
+
 import LogginUserDropdown from "./LogginUserDropdown";
-import { getProfile } from "@/apis/user";
-import { cookies } from "next/headers";
 
 const getProfileServer = async () => {
   const nextCookies = cookies();

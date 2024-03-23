@@ -1,6 +1,7 @@
-import { ACCESS_TOKEN, API_URL } from "@/utils/constants";
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import Cookies from "js-cookie";
+
+import { ACCESS_TOKEN, API_URL } from "@/utils/constants";
 
 const API = axios.create({
   baseURL: API_URL,

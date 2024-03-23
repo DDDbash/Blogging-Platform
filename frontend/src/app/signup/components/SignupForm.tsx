@@ -20,9 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Auth } from "@/types/auth";
 import { APIErrorWrapper, APIReponse } from "@/types/common";
+import { ACCESS_TOKEN } from "@/utils/constants";
 
 import { formSchema, SignupSchema } from "../schema";
-import { ACCESS_TOKEN } from "@/utils/constants";
 
 const SignupForm = () => {
   const [generalErrorMessage, setGeneralErrorMessage] = useState("");

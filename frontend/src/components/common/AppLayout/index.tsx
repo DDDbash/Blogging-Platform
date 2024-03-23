@@ -1,4 +1,5 @@
 import { PropsWithChildren } from "react";
+
 import Navbar from "../Navbar";
 
 const AppLayout = (props: PropsWithChildren) => {
