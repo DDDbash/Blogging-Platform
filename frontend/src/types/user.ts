@@ -5,3 +5,5 @@ export type User = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type UserInBlog = Pick<User, "id" | "username">;

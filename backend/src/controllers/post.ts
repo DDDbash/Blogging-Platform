@@ -40,7 +40,7 @@ export const getPosts = async (req: Request, res: Response) => {
     res.status(200).json({
       data: allPosts[0],
       meta: {
-        page,
+        page: pageNo,
         perPage,
         total: allPosts[1],
       },
