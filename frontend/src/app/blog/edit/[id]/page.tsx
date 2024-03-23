@@ -1,25 +1,28 @@
+import { getProfileServer } from "@/apis/user";
+import BlogsForm from "@/components/blogs/BlogsForm";
 import AppLayout from "@/components/common/AppLayout";
-
-import EditBlogForm from "./components/EditBlogForm";
 
 type Props = {
   params: { id: string };
 };
 
-const CreateBlog = (props: Props) => {
+const EditBlog = async (props: Props) => {
   const {
     params: { id: postId },
   } = props;
 
+  const profileRes = await getProfileServer();
+  const profile = profileRes.data;
+
   return (
-    <AppLayout>
+    <AppLayout profile={profile}>
       <div className="container pt-10">
         <h3>Edit your blog post</h3>
 
-        <EditBlogForm postId={postId} />
+        <BlogsForm postId={postId} />
       </div>
     </AppLayout>
   );
 };
 
-export default CreateBlog;
+export default EditBlog;

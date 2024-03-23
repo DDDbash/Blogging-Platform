@@ -4,4 +4,5 @@ export const urls = {
   profile: "/user/profile",
   blogPost: "/post",
   blogPostDetail: "/post/:postId",
+  authBlogPostDetail: "/post/auth/:postId",
 };

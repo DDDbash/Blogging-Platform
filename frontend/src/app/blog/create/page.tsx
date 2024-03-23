@@ -1,14 +1,17 @@
+import { getProfileServer } from "@/apis/user";
+import BlogsForm from "@/components/blogs/BlogsForm";
 import AppLayout from "@/components/common/AppLayout";
 
-import CreateBlogForm from "./components/CreateBlogForm";
+const CreateBlog = async () => {
+  const profileRes = await getProfileServer();
+  const profile = profileRes.data;
 
-const CreateBlog = () => {
   return (
-    <AppLayout>
+    <AppLayout profile={profile}>
       <div className="container pt-10">
         <h3>Create a new blog post</h3>
 
-        <CreateBlogForm />
+        <BlogsForm />
       </div>
     </AppLayout>
   );

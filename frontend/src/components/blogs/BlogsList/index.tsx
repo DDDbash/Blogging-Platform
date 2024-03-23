@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 import { useBlogsListQuery } from "@/hooks/queries/blog";
+import { User } from "@/types/user";
 import { MAX_CONTENT_LENGTH_IN_LIST } from "@/utils/constants";
 
 import {
@@ -14,10 +15,21 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../ui/dropdown-menu";
+import DeleteBlogDialog from "../DeleteBlogDialog";
 
-const BlogsList = () => {
+type Props = {
+  profile?: User | null;
+};
+
+const BlogsList = (props: Props) => {
+  const { profile } = props;
+
   const [page] = useState(1);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedBlogId, setSelectedBlogId] = useState<number | undefined>(
+    undefined,
+  );
 
   const router = useRouter();
 
@@ -38,28 +50,32 @@ const BlogsList = () => {
                 Author: {blog.author.username}
               </span>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-2">
-                  <Ellipsis />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/blog/edit/${blog.id}`);
-                    }}
-                  >
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {profile?.id === blog.author.id && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-2">
+                    <Ellipsis />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/blog/edit/${blog.id}`);
+                      }}
+                    >
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedBlogId(blog.id);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                    >
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
 
             <div className="flex w-3/4 flex-col gap-3 pt-1">
@@ -80,6 +96,14 @@ const BlogsList = () => {
           </Link>
         );
       })}
+      <DeleteBlogDialog
+        isOpen={isDeleteDialogOpen}
+        selectedBlogId={selectedBlogId}
+        onClose={() => {
+          setSelectedBlogId(undefined);
+          setIsDeleteDialogOpen(false);
+        }}
+      />
     </div>
   );
 };

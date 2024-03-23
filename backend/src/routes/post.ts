@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.get("/", getPosts);
 router.get("/:postId", getPostDetails);
+router.get("/auth/:postId", auth, getPostDetails);
 router.post("/", auth, createPost);
 router.patch("/:postId", auth, updatePost);
 router.delete("/:postId", auth, deletePost);

@@ -3,9 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
-import { createBlog } from "@/apis/blog";
+import { createBlog, editBlog } from "@/apis/blog";
+import { formSchema } from "@/app/blog/schema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,17 +20,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuthBlogDetailsQuery } from "@/hooks/queries/blog";
 import { BlogPayload } from "@/types/blog";
 import { APIErrorWrapper, APIReponse } from "@/types/common";
 
-import { formSchema } from "../../schema";
+type Props = {
+  postId?: string;
+};
 
-const CreateBlogForm = () => {
+const BlogsForm = (props: Props) => {
+  const { postId } = props;
+
   const queryClient = useQueryClient();
 
   const { toast } = useToast();
 
   const router = useRouter();
+
+  const { data: blogDetailsQuery } = useAuthBlogDetailsQuery(
+    Number(postId) ?? 0,
+  );
+  const blogDetails = blogDetailsQuery?.data;
 
   const form = useForm<BlogPayload>({
     resolver: zodResolver(formSchema),
@@ -37,27 +49,47 @@ const CreateBlogForm = () => {
       content: "",
     },
   });
+  const { setValue } = form;
 
-  const createBlogMutation = useMutation<
+  const blogMutation = useMutation<
     APIReponse,
     APIErrorWrapper<string>,
     BlogPayload
   >({
-    mutationFn: (data: BlogPayload) => createBlog(data),
+    mutationFn: postId
+      ? (data: BlogPayload) => editBlog(Number(postId), data)
+      : createBlog,
   });
 
+  useEffect(() => {
+    if (!blogDetails) return;
+
+    setValue("title", blogDetails.title);
+    setValue("content", blogDetails.content);
+  }, [setValue, blogDetails]);
+
   const onSubmit = (data: BlogPayload) => {
-    createBlogMutation.mutate(data, {
+    blogMutation.mutate(data, {
       onSuccess: (res) => {
+        const defaultMsg = postId ? "Blog Updated" : "Blog Created";
         toast({
-          title: res?.message || "Blog Created",
+          title: res?.message || defaultMsg,
         });
         queryClient.invalidateQueries({ queryKey: ["blogs-list"] });
+        if (postId) {
+          queryClient.invalidateQueries({
+            queryKey: ["blog-details", Number(postId)],
+          });
+        }
         router.push("/");
       },
       onError: (err) => {
+        const defaultMsg = postId
+          ? "Blog Update Failed"
+          : "Blog Creation Failed";
+
         toast({
-          title: err.response?.data.message || "Blog Creation Failed",
+          title: err.response?.data.message || defaultMsg,
         });
       },
     });
@@ -97,7 +129,7 @@ const CreateBlogForm = () => {
             )}
           />
 
-          <Button disabled={createBlogMutation.isPending} type="submit">
+          <Button disabled={blogMutation.isPending} type="submit">
             Submit
           </Button>
         </form>
@@ -106,4 +138,4 @@ const CreateBlogForm = () => {
   );
 };
 
-export default CreateBlogForm;
+export default BlogsForm;

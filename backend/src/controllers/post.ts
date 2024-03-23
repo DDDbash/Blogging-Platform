@@ -31,6 +31,9 @@ export const getPosts = async (req: Request, res: Response) => {
       },
       skip: (pageNo - 1) * 5,
       take: perPage,
+      order: {
+        createdAt: "DESC",
+      },
       relations: {
         author: true,
         comments: true,
@@ -50,7 +53,10 @@ export const getPosts = async (req: Request, res: Response) => {
   }
 };
 
-export const getPostDetails = async (req: Request, res: Response) => {
+export const getPostDetails = async (
+  req: AuthenticatedUserRequest,
+  res: Response
+) => {
   const { postId } = req.params;
 
   if (!postId) {
@@ -89,6 +95,10 @@ export const getPostDetails = async (req: Request, res: Response) => {
 
     if (!postDetail) {
       return res.status(404).json({ message: "Post not found" });
+    }
+
+    if (req.user && postDetail.author.id !== Number(req.user.id)) {
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     res.status(200).json({ data: postDetail });

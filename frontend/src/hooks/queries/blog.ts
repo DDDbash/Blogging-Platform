@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getBlogDetails, getBlogsList } from "@/apis/blog";
+import { getAuthBlogDetails, getBlogDetails, getBlogsList } from "@/apis/blog";
 import { PaginationParams } from "@/types/common";
 
 export const useBlogsListQuery = ({ page, limit }: PaginationParams) => {
@@ -14,6 +14,15 @@ export const useBlogDetailsQuery = (postId: number) => {
   return useQuery({
     queryKey: ["blog-details", postId],
     queryFn: () => getBlogDetails(postId),
+    enabled: !!postId,
+    refetchOnWindowFocus: false,
+  });
+};
+
+export const useAuthBlogDetailsQuery = (postId: number) => {
+  return useQuery({
+    queryKey: ["blog-details", postId],
+    queryFn: () => getAuthBlogDetails(postId),
     enabled: !!postId,
     refetchOnWindowFocus: false,
   });
