@@ -2,6 +2,7 @@ import "reflect-metadata";
 import express from "express";
 import dataSource from "./datasource/dataSource";
 import authRoutes from "./routes/auth";
+import userRoutes from "./routes/user";
 import postRoutes from "./routes/post";
 import commentRoutes from "./routes/comment";
 import cors from "cors";
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 app.use("/post", postRoutes);
 app.use("/comment", commentRoutes);
 

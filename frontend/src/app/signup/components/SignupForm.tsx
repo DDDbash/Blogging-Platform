@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -23,11 +22,10 @@ import { Auth } from "@/types/auth";
 import { APIErrorWrapper, APIReponse } from "@/types/common";
 
 import { formSchema, SignupSchema } from "../schema";
+import { ACCESS_TOKEN } from "@/utils/constants";
 
 const SignupForm = () => {
   const [generalErrorMessage, setGeneralErrorMessage] = useState("");
-
-  const router = useRouter();
 
   const form = useForm<SignupSchema>({
     resolver: zodResolver(formSchema),
@@ -49,8 +47,8 @@ const SignupForm = () => {
   const onSubmit = (data: SignupSchema) => {
     signupMutation.mutate(data, {
       onSuccess: (res) => {
-        Cookies.set("access_token", res.data.token);
-        router.push("/");
+        Cookies.set(ACCESS_TOKEN, res.data.token);
+        window.location.href = "/";
       },
       onError: (err) => {
         setGeneralErrorMessage(err.response?.data.message || "Error");

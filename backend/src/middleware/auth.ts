@@ -37,6 +37,7 @@ const auth = async (
     next();
   } catch (error) {
     console.log(error);
+    return res.status(401).json({ message: "Please Log in again" });
   }
 };
 

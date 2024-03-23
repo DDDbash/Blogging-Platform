@@ -1,7 +1,9 @@
-import axios, { AxiosRequestConfig } from "axios";
+import { ACCESS_TOKEN, API_URL } from "@/utils/constants";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import Cookies from "js-cookie";
 
 const API = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_APIURL,
+  baseURL: API_URL,
   headers: {
     Accept: "application/json",
     "Content-Type": "application/json",
@@ -9,8 +11,31 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((request) => {
+  const accessToken = Cookies.get(ACCESS_TOKEN);
+
+  if (accessToken && request.headers && !request.headers["Authorization"]) {
+    request.headers["Authorization"] = `Bearer ${accessToken}`;
+    return request;
+  }
+
   return request;
 });
+
+API.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  (error: AxiosError) => {
+    const statusCode = error.response?.status;
+
+    if (statusCode === 401) {
+      Cookies.remove(ACCESS_TOKEN);
+      window.location.replace("/");
+    }
+
+    return Promise.reject(error);
+  },
+);
 
 const get = <T>(url: string, config?: AxiosRequestConfig<any>) => {
   return API.get<T>(url, config);
