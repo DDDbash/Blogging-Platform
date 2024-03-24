@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import DeleteBlogDialog from "../DeleteBlogDialog";
+import Pagination from "../Pagination";
 
 type Props = {
   profile?: User | null;
@@ -25,7 +26,7 @@ type Props = {
 const BlogsList = (props: Props) => {
   const { profile } = props;
 
-  const [page] = useState(1);
+  const [page, setPage] = useState(1);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedBlogId, setSelectedBlogId] = useState<number | undefined>(
     undefined,
@@ -33,7 +34,7 @@ const BlogsList = (props: Props) => {
 
   const router = useRouter();
 
-  const { data: blogsListQuery } = useBlogsListQuery({ page, limit: 10 });
+  const { data: blogsListQuery } = useBlogsListQuery({ page, limit: 5 });
   const blogsList = blogsListQuery?.data;
 
   return (
@@ -96,6 +97,17 @@ const BlogsList = (props: Props) => {
           </Link>
         );
       })}
+
+      {blogsListQuery && (
+        <Pagination
+          currentPage={blogsListQuery.meta.page}
+          totalPages={blogsListQuery.meta.lastPage}
+          onPageChange={(page) => {
+            setPage(page);
+          }}
+        />
+      )}
+
       <DeleteBlogDialog
         isOpen={isDeleteDialogOpen}
         selectedBlogId={selectedBlogId}

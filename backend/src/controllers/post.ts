@@ -29,7 +29,7 @@ export const getPosts = async (req: Request, res: Response) => {
         createdAt: true,
         updatedAt: true,
       },
-      skip: (pageNo - 1) * 5,
+      skip: (pageNo - 1) * perPage,
       take: perPage,
       order: {
         createdAt: "DESC",
@@ -46,6 +46,7 @@ export const getPosts = async (req: Request, res: Response) => {
         page: pageNo,
         perPage,
         total: allPosts[1],
+        lastPage: Math.ceil(allPosts[1] / perPage),
       },
     });
   } catch (error) {
