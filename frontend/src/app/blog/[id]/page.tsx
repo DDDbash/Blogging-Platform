@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { getBlogDetails } from "@/apis/blog";
 import { getProfileServer } from "@/apis/user";
 import AppLayout from "@/components/common/AppLayout";
@@ -53,9 +55,18 @@ const BlogDetails = async (props: Props) => {
           Author: {blogDetails?.author.username}
         </span>
 
+        <div className="relative h-[500px] w-full">
+          <Image
+            src={blogDetails?.image || ""}
+            alt="image"
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
+        </div>
+
         <div className="mt-2 flex flex-col gap-4">
           <h3>{blogDetails?.title}</h3>
-
           <p>{blogDetails?.content}</p>
         </div>
 

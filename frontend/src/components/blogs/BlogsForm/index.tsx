@@ -2,8 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { createBlog, editBlog } from "@/apis/blog";
@@ -42,6 +43,8 @@ const BlogsForm = (props: Props) => {
   );
   const blogDetails = blogDetailsQuery?.data;
 
+  const [selectedImage, setSelectedImage] = useState<string>("");
+
   const form = useForm<BlogPayload>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,10 +57,10 @@ const BlogsForm = (props: Props) => {
   const blogMutation = useMutation<
     APIReponse,
     APIErrorWrapper<string>,
-    BlogPayload
+    FormData
   >({
     mutationFn: postId
-      ? (data: BlogPayload) => editBlog(Number(postId), data)
+      ? (data: FormData) => editBlog(Number(postId), data)
       : createBlog,
   });
 
@@ -66,10 +69,24 @@ const BlogsForm = (props: Props) => {
 
     setValue("title", blogDetails.title);
     setValue("content", blogDetails.content);
+
+    setSelectedImage(blogDetails.image);
   }, [setValue, blogDetails]);
 
   const onSubmit = (data: BlogPayload) => {
-    blogMutation.mutate(data, {
+    if (!selectedImage) {
+      return toast({
+        title: "Please select an image",
+      });
+    }
+
+    const formData = new FormData();
+
+    formData.append("title", data.title);
+    formData.append("content", data.content);
+    formData.append("image", selectedImage);
+
+    blogMutation.mutate(formData, {
       onSuccess: (res) => {
         const defaultMsg = postId ? "Blog Updated" : "Blog Created";
         toast({
@@ -128,6 +145,45 @@ const BlogsForm = (props: Props) => {
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    {...field}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          const base64 = reader.result as string;
+                          setSelectedImage(base64);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {selectedImage && (
+            <Image
+              src={selectedImage}
+              alt="image"
+              height={700}
+              width={700}
+              className="obect-contain"
+            />
+          )}
 
           <Button disabled={blogMutation.isPending} type="submit">
             Submit

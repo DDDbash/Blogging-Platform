@@ -36,7 +36,7 @@ export const signup = async (req: Request, res: Response) => {
       { id: result.id, email: result.email, username: newUser.username },
       "secretKey",
       {
-        expiresIn: "1h",
+        expiresIn: "12h",
       }
     );
 
@@ -85,7 +85,7 @@ export const signin = async (req: Request, res: Response) => {
         username: existingUser.username,
       },
       "secretKey",
-      { expiresIn: "1h" }
+      { expiresIn: "12h" }
     );
 
     const returnValue = {

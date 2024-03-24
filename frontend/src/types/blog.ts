@@ -4,6 +4,7 @@ import { UserInBlog } from "./user";
 export type BlogPayload = {
   title: string;
   content: string;
+  image: string;
 };
 
 export type Blog = {
@@ -14,4 +15,5 @@ export type Blog = {
   updatedAt: string;
   author: UserInBlog;
   comments: Comment[];
+  image: string;
 };

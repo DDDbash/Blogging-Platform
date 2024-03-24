@@ -1,5 +1,5 @@
 import * as axios from "@/config/axios";
-import { Blog, BlogPayload } from "@/types/blog";
+import { Blog } from "@/types/blog";
 import {
   APIPaginationResponse,
   APIReponse,
@@ -29,11 +29,11 @@ export const getAuthBlogDetails = (postId: number) => {
     .then((res) => res.data);
 };
 
-export const createBlog = (payload: BlogPayload) => {
+export const createBlog = (payload: FormData) => {
   return axios.post<APIReponse>(urls.blogPost, payload).then((res) => res.data);
 };
 
-export const editBlog = (postId: number, payload: BlogPayload) => {
+export const editBlog = (postId: number, payload: FormData) => {
   return axios
     .patch<APIReponse>(
       urls.blogPostDetail.replace(":postId", String(postId)),

@@ -2,6 +2,7 @@
 
 import dayjs from "dayjs";
 import { Ellipsis } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -79,20 +80,32 @@ const BlogsList = (props: Props) => {
               )}
             </div>
 
-            <div className="flex w-3/4 flex-col gap-3 pt-1">
-              <div className="flex flex-col gap-1 lg:gap-2">
-                <h4>{blog.title}</h4>
+            <div className="flex h-full w-full justify-between gap-2">
+              <div className="flex w-3/4 flex-col gap-3 pt-1">
+                <div className="flex flex-col gap-1 lg:gap-2">
+                  <h4>{blog.title}</h4>
 
-                <p>
-                  {blog.content.length > MAX_CONTENT_LENGTH_IN_LIST
-                    ? `${blog.content.slice(0, 144)}...`
-                    : blog.content}
-                </p>
+                  <p>
+                    {blog.content.length > MAX_CONTENT_LENGTH_IN_LIST
+                      ? `${blog.content.slice(0, 144)}...`
+                      : blog.content}
+                  </p>
+                </div>
+
+                <span className="text-sm text-gray-600">
+                  {dayjs(blog.createdAt).format("MMM D, YYYY")}
+                </span>
               </div>
 
-              <span className="text-sm text-gray-600">
-                {dayjs(blog.createdAt).format("MMM D, YYYY")}
-              </span>
+              <div className="relative h-auto w-1/4">
+                <Image
+                  src={blog.image}
+                  alt="img"
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
+                />
+              </div>
             </div>
           </Link>
         );

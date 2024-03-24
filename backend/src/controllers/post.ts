@@ -16,6 +16,7 @@ export const getPosts = async (req: Request, res: Response) => {
         id: true,
         title: true,
         content: true,
+        image: true,
         author: {
           id: true,
           username: true,
@@ -72,6 +73,7 @@ export const getPostDetails = async (
         id: true,
         title: true,
         content: true,
+        image: true,
         author: {
           id: true,
           username: true,
@@ -131,6 +133,7 @@ export const createPost = async (
     newPost.title = post.title;
     newPost.content = post.content;
     newPost.author = req.user;
+    newPost.image = post.image;
 
     await postRepo.save(newPost);
 

@@ -22,6 +22,9 @@ export class Post {
   @Column()
   content: string;
 
+  @Column({ nullable: true })
+  image: string;
+
   @CreateDateColumn()
   createdAt: string;
 
