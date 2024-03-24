@@ -10,8 +10,8 @@ import {
 
 const router = express.Router();
 
-router.get("/:postId", getComments);
-router.post("/:postId", auth, createComment);
+router.get("/post/:postId", getComments);
+router.post("/post/:postId", auth, createComment);
 router.patch("/:commentId", auth, updateComment);
 router.delete("/:commentId", auth, deleteComment);
 

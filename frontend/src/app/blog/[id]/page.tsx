@@ -2,6 +2,8 @@ import { getBlogDetails } from "@/apis/blog";
 import { getProfileServer } from "@/apis/user";
 import AppLayout from "@/components/common/AppLayout";
 
+import CommentSection from "./components/CommentSection";
+
 export const getBlogDetailsServer = async (id: number) => {
   try {
     const res = await getBlogDetails(id);
@@ -46,7 +48,7 @@ const BlogDetails = async (props: Props) => {
 
   return (
     <AppLayout profile={profile}>
-      <div className="container px-4 pt-10">
+      <div className="container px-4 py-10">
         <span className="text-sm text-gray-500">
           Author: {blogDetails?.author.username}
         </span>
@@ -56,6 +58,8 @@ const BlogDetails = async (props: Props) => {
 
           <p>{blogDetails?.content}</p>
         </div>
+
+        <CommentSection blogDetails={blogDetails} profile={profile} />
       </div>
     </AppLayout>
   );

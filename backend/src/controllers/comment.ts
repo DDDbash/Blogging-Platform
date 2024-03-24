@@ -35,6 +35,9 @@ export const getComments = async (req: Request, res: Response) => {
           id: Number(postId),
         },
       },
+      order: {
+        createdAt: "DESC",
+      },
       relations: {
         post: true,
         author: true,
@@ -83,7 +86,9 @@ export const createComment = async (
 
     await commentRepo.save(newcomment);
 
-    res.status(200).json({ message: "Comment added" });
+    res
+      .status(200)
+      .json({ data: { postId: newcomment.post.id }, message: "Comment added" });
   } catch (error) {
     res.status(422).json(error);
   }
@@ -128,7 +133,12 @@ export const updateComment = async (
 
     await commentRepo.save(existingComment);
 
-    res.status(200).json({ message: "Comment updated" });
+    res
+      .status(200)
+      .json({
+        data: { postId: existingComment.post.id },
+        message: "Comment updated",
+      });
   } catch (error) {
     res.status(422).json(error);
   }
@@ -157,8 +167,11 @@ export const deleteComment = async (
       },
       relations: {
         author: true,
+        post: true,
       },
     });
+
+    const postId = existingComment?.post.id;
 
     if (!existingComment) {
       return res.status(404).json({ message: "Comment not found" });
@@ -170,7 +183,10 @@ export const deleteComment = async (
 
     await commentRepo.softDelete(Number(commentId));
 
-    res.status(200).json({ message: "Comment successfully deleted" });
+    res.status(200).json({
+      data: { postId },
+      message: "Comment successfully deleted",
+    });
   } catch (error) {
     res.status(422).json(error);
   }

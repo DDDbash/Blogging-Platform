@@ -78,6 +78,10 @@ export const getPostDetails = async (
         comments: {
           id: true,
           content: true,
+          author: {
+            id: true,
+            username: true,
+          },
           createdAt: true,
           updatedAt: true,
         },
@@ -89,7 +93,9 @@ export const getPostDetails = async (
       },
       relations: {
         author: true,
-        comments: true,
+        comments: {
+          author: true,
+        },
       },
     });
 

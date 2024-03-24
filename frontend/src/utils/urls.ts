@@ -5,4 +5,6 @@ export const urls = {
   blogPost: "/post",
   blogPostDetail: "/post/:postId",
   authBlogPostDetail: "/post/auth/:postId",
+  commentsOfBlog: "/comment/post/:postId",
+  commentId: "/comment/:commentId",
 };
