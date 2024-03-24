@@ -2,7 +2,7 @@
 - Node v20.x.x or higher
 
 ## Process:
-- Clone the repo with the command \n
+- Clone the repo with the command
 ```
 git clone https://github.com/DDDbash/Blogging-Platform.git
 ```
